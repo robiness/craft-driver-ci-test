@@ -55,7 +55,7 @@ void main(List<String> args) async {
     await driver.tapText('Submit');
     final result = await driver.readFirstTextWhere(contains: 'Name:');
     _assert(result != null, 'Result not found');
-    _assert(result!.contains('CI User'), 'Name missing: $result');
+    _assert(result!.contains('WRONG NAME'), 'Name missing: $result');
     _assert(result.contains('ci@test.dev'), 'Email missing: $result');
   });
 
