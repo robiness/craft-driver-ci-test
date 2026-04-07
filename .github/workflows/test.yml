@@ -1,0 +1,53 @@
+name: craft_driver CI test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test-macos:
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Install app dependencies
+        run: cd app && flutter pub get
+
+      - name: Install driver dependencies
+        run: cd driver && dart pub get
+
+      - name: Run CI tests (macOS)
+        run: cd driver && dart run bin/ci_test.dart ../app macos
+
+  test-linux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb ninja-build libgtk-3-dev
+
+      - name: Install app dependencies
+        run: cd app && flutter pub get
+
+      - name: Install driver dependencies
+        run: cd driver && dart pub get
+
+      - name: Enable Linux desktop
+        run: flutter config --enable-linux-desktop
+
+      - name: Run CI tests (Linux headless)
+        run: cd driver && xvfb-run dart run bin/ci_test.dart ../app linux
